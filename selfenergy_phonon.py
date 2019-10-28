@@ -1,28 +1,11 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Dec 08 01:44:04 2016
-
-@author: Ben
-"""
-
-#
-# Warnings!!!
-# upper and lower case MPI commands? mpi data types?
-# different python versions for einsum and mpi4py????
-# why can't I reduce a complex number array??
-#
 
 import subprocess
-#bash_command('source mlpython2.7.5.sh')
-    
+#bash_command('source mlpython2.7.5.sh')    
 import numpy as np
-#from scipy import linalg
 import time
 import sys, os
 
-#from functions import *
-
-savedir   = sys.argv[1]
+savedir = sys.argv[1]
 
 myrank=0
 nprocs=1
@@ -66,7 +49,6 @@ if myrank==0:
 
 startTime = time.time()
 
-
 option = 'G'
 
 if option=='S':
@@ -87,6 +69,7 @@ print dens
 
 exit()
 
+# get selfenergy in real frequecy via fft and save to file
 
 Nw = len(range(Nt/2, Nt))
 ts = np.linspace(0, (Nw-1)*2*dt, Nt)
@@ -101,8 +84,6 @@ for it in range(Nt/2, Nt):
 fftS = np.fft.fft(SRt) * 2*dt
 freqs = np.fft.fftfreq(Nw, 2*dt)
 fftS[0] = 0.
-
-#print fftS[0:10]
 
 freqs, fftS = zip(*sorted(zip(freqs, fftS)))
 freqs = 2*np.pi*np.array(freqs)

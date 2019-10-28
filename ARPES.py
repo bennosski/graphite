@@ -1,16 +1,13 @@
 
 import subprocess
-#bash_command('source mlpython2.7.5.sh')
-    
+#bash_command('source mlpython2.7.5.sh')  
 import numpy as np
-#from scipy import linalg
 import time
 import sys, os
 from functions import *
 from mpi4py import MPI
 import resource
 import collect_ARPES_data as cAd
-
 
 comm = MPI.COMM_WORLD
 nprocs = comm.size
@@ -21,7 +18,6 @@ def bash_command(cmd):
 
 Norbs = 2        
 
-#inputfile = sys.argv[1]
 savedir   = sys.argv[1]
 LG = sys.argv[2]
 
@@ -91,13 +87,12 @@ if pump==3:
 # setup kpp, k2p, k2i, i2k for the new cut
 # init Uks for these points
 
-#Nk = 101 # number of points on the cut
+# number of points on the cut
+#Nk = 101
 Nk = 96
 
 k2p, k2i, i2k = init_k2p_k2i_i2k(Nk, 1, nprocs, myrank)
 kpp = np.count_nonzero(k2p==myrank)
-#ppk = nprocs//Nk
-
 
 '''
 if myrank==0:
@@ -106,15 +101,13 @@ if myrank==0:
         kx,ky = get_kx_ky_ARPES(ik,Nk)
         print kx, ky
 '''
-#comm.barrier()
-#exit()
 
 UksR, UksI, eks, fks = init_Uks_ARPES(myrank, Nk, kpp, k2p, k2i, Nt, Ntau, dt, dtau, pump, Norbs)
  
 #2.4 is somewhat broad spectra in energy, but ok
-#probe_width = 2.4  # time units
-#probe_width = 5.0  # time units
-#probe_width = 3.0 # worked well
+#probe_width = 2.4  # in time units
+#probe_width = 5.0  # in time units
+#probe_width = 3.0  # worked well
 probe_width = 10.0
 
 Nw = 100
@@ -134,7 +127,6 @@ if myrank==0:
     print time_indices
 
 Nt_arpes = len(time_indices)
-#I = np.zeros([3, kpp, Nw, Nt_arpes])
 I = np.zeros([Nk, Nw, Nt_arpes])
 
 def init_probe(Nt, dt, it0, probe_width):
@@ -161,7 +153,6 @@ myfile.write('done initialize')
 # check for existing data
 counts = cAd.get_counts(savedir+'ARPES'+LG+'/')
 
-
 # split time indices based on rank%(Nkpoints)
 Nti = len(time_indices)            
                    
@@ -183,7 +174,6 @@ for ik in range(Nk):
         temp = multiply(G0k, Sigma, Nt, Ntau, dt, dtau, Norbs)
         temp.scale(-1.0)
 
-        # i think the integral done by multiply means temp has no delta piece
         # we add a delta piece to add the identity in I - G0*Sigma
         temp.DR = np.ones(Norbs*Nt) / dt
         temp.DM = np.ones(Norbs*Ntau) / (-1j*dtau)
@@ -211,13 +201,9 @@ for ik in range(Nk):
 
         # split this based on myrank as well
         for index,it0 in enumerate(time_indices):
-        
-            #if index>0:
-            #    break
             
             if ik in counts and index<counts[ik]:
                 continue
-
 
             if myrank==0:
                 print 'working on it0',it0,' number ',index,' out of ',len(time_indices)
@@ -240,8 +226,8 @@ for ik in range(Nk):
             if myrank==0:
                 print 'iteration end time',time.time()-startTime
 
+            # save results for each k-point individually
             np.save(savedir+'ARPES'+LG+'/I%d_%d'%(ik,index)+'.npy', I[ik,:,index])
-
 
 '''
 Itotal = np.zeros([Nk, Nw, Nt_arpes])
