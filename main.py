@@ -1,17 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Dec 08 01:44:04 2016
-
-@author: Ben
-"""
-
-# OK. Remember to commit changes before changing branches.
-# The branches will work separately if this is done.
-# all branches see uncommitted changes unless they are based on different commits
-
-
 import subprocess
-
 import pdb
 import numpy as np
 import time
@@ -79,7 +66,6 @@ Norbs = 2
 
 if myrank==0:
     startTime = time.time()
-
     
 ## k2p is k indices to processor number
 k2p, k2i, i2k = init_k2p_k2i_i2k(Nkx, Nky, nprocs, myrank)
@@ -91,7 +77,6 @@ if myrank==0:
     print "kpp =",kpp
 
 UksR, UksI, eks, fks = init_Uks(myrank, Nkx, Nky, kpp, k2p, k2i, Nt, Ntau, dt, dtau, pump, Norbs)
-
 
 if myrank==0:
     print "done with Uks initialization"
