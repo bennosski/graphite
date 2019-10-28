@@ -89,7 +89,7 @@ if pump==3:
 
 # number of points on the cut
 #Nk = 101
-Nk = 96
+Nk = 3
 
 k2p, k2i, i2k = init_k2p_k2i_i2k(Nk, 1, nprocs, myrank)
 kpp = np.count_nonzero(k2p==myrank)
@@ -171,7 +171,7 @@ for ik in range(Nk):
         if myrank==0:
             print 'Memory usage after G0k: %s (kb)'% resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
 
-        temp = multiply(G0k, Sigma, Nt, Ntau, dt, dtau, Norbs)
+        multiply(G0k, Sigma, temp, Nt, Ntau, dt, dtau, Norbs)
         temp.scale(-1.0)
 
         # we add a delta piece to add the identity in I - G0*Sigma

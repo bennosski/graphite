@@ -5,9 +5,7 @@ import time
 import sys, os
 from functions import *
 from mpi4py import MPI
-import psutil
-
-process = psutil.Process(os.getpid())
+import shutil
 
 comm = MPI.COMM_WORLD
 nprocs = comm.size
@@ -34,6 +32,7 @@ if myrank==0:
     mymkdir(savedir)
     mymkdir(savedir+'Glocdir/')
     mymkdir(savedir+'Sdir/')
+    shutil.copyfile('input', savedir+'input')
 
 comm.barrier()
         
@@ -60,7 +59,6 @@ if myrank==0:
     print 'omega = ',omega
     print 'pump  = ',pump
     print '\n'
-
     
 Norbs = 2
 
@@ -80,7 +78,6 @@ UksR, UksI, eks, fks = init_Uks(myrank, Nkx, Nky, kpp, k2p, k2i, Nt, Ntau, dt, d
 
 if myrank==0:
     print "done with Uks initialization"
-
 
 comm.barrier()        
 if myrank==0:
@@ -178,7 +175,7 @@ for myiter in range(iter_selfconsistency):
             ik1, ik2 = i2k[ik]
             G0k = compute_G0(ik1, ik2, myrank, Nkx, Nky, kpp, k2p, k2i, Nt, Ntau, dt, dtau, fks, UksR, UksI, eks, Norbs)
 
-            temp = multiply(G0k, Sigma_phonon, Nt, Ntau, dt, dtau, Norbs)
+            multiply(G0k, Sigma_phonon, temp, Nt, Ntau, dt, dtau, Norbs)
 
             temp.scale(-1.0)
 
