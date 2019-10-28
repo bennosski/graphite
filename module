@@ -1,0 +1,4 @@
+#!/bin/bash
+
+module load py-scipystack/1.0_py27
+module load py-mpi4py/3.0.0_py27
