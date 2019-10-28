@@ -101,11 +101,7 @@ comm.barrier()
 if myrank==0:
     print "Initialization time ", time.time()-startTime,'\n'
 
-
-#volume = Nkx*Nky * np.sqrt(3.)/3. # the real space volume
-#volume = Nkx*Nky * 8*np.pi**2/(3.*np.sqrt(3.)) # the k space volume
 volume = Nkx*Nky
-
 
 ########## ---------------- Compute the electron selfenergy due to phonons -------------------- ##############
 
@@ -177,10 +173,7 @@ for myiter in range(iter_selfconsistency):
         print np.amax(np.abs(thing.IR))
         print np.amax(np.abs(thing.RI))
         print np.amax(np.abs(thing.M))
-    
-    #pdb.set_trace()
-    #print "after sigma phonon"
-    
+        
     if myrank==0:
         print "iteration",myiter
         print "time computing phonon selfenergy ", time.time()-timeStart,'\n'
@@ -204,15 +197,9 @@ for myiter in range(iter_selfconsistency):
 
             temp.scale(-1.0)
 
-            # i think the integral done by multiply means temp has no delta piece
             # we add a delta piece to add the identity in I - G0*Sigma
             temp.DR = np.ones(Norbs*Nt) / dt
             temp.DM = np.ones(Norbs*Ntau) / (-1j*dtau)
-
-            # copies are good so that the diagonals of the langreth matrices don't get changed during solve
-            #temp2 = langreth(Nt, Ntau, Norbs)
-            #temp2.mycopy(G0k)
-            #out = solve(temp, G0k, Nt, Ntau, dt, dtau, Norbs)
 
             temp = solve(temp, G0k, Nt, Ntau, dt, dtau, Norbs)
 

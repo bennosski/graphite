@@ -6,10 +6,7 @@ def parseline(mystr):
     ind = mystr.index('#')
     return mystr[ind+1:]
 
-
 class langreth:
-    # would be easier to have Nt, Ntau, Norbs as member variables
-
     def __init__(self, Nt, Ntau, Norbs):
         self.G  = np.zeros([Norbs*Nt, Norbs*Nt], dtype=complex)
         self.L  = np.zeros([Norbs*Nt, Norbs*Nt], dtype=complex)
@@ -128,7 +125,6 @@ class langreth:
 
 
 def setup_cuts(Nk):
-
     if False:
         # gamma X M gamma
         cut_ikxs = []
@@ -286,7 +282,6 @@ def init_k2p_k2i_i2k(Nkx, Nky, nprocs, myrank):
 
 # note 1 on diagonal. This means that SigmaR is nonzero for t=t' which is good. 
 # matches G0 definition
-# is this the right choice? 
 def init_theta(NT):
     #theta = np.zeros([NT,NT])
     theta = np.diag(0.5 * np.ones(NT))
@@ -314,7 +309,6 @@ def init_Uks_ARPES(myrank, Nk, kpp, k2p, k2i, Nt, Ntau, dt, dtau, pump, Norbs):
     UksI = np.zeros([kpp, Ntau, Norbs], dtype=complex)
     fks  = np.zeros([kpp, Norbs], dtype=complex)
     eks  = np.zeros([kpp, Norbs], dtype=complex)
-
     
     for ik in range(Nk):
         if myrank==k2p[ik,0]:                
@@ -345,8 +339,6 @@ def init_Uks_ARPES(myrank, Nk, kpp, k2p, k2i, Nt, Ntau, dt, dtau, pump, Norbs):
                     UksI[index,it,1] = np.exp(+ek*dtau*it)
                 
     return UksR, UksI, eks, fks
-
-
                     
 def init_Uks(myrank, Nkx, Nky, kpp, k2p, k2i, Nt, Ntau, dt, dtau, pump, Norbs):
     
@@ -397,8 +389,7 @@ def compute_G0(ik1, ik2, myrank, Nkx, Nky, kpp, k2p, k2i, Nt, Ntau, dt, dtau, fk
         
     kx, ky = get_kx_ky(ik1, ik2, Nkx, Nky)
 
-    # check if this is the right k point for this proc
-    # this should have been checked before calling this function
+    # checking k point
     if myrank==k2p[ik1,ik2]:
         index = k2i[ik1,ik2]
 
@@ -476,8 +467,6 @@ def compute_G0_ARPES(ik, myrank, Nk, kpp, k2p, k2i, Nt, Ntau, dt, dtau, fks, Uks
         
     kx, ky = get_kx_ky_ARPES(ik, Nk)
     
-    # check if this is the right k point for this proc
-    # this should have been checked before calling this function
     if myrank==k2p[ik,0]:
         index = k2i[ik,0]
 
@@ -598,7 +587,6 @@ def init_D(omega, Nt, Ntau, dt, dtau, Norbs):
 
 
 
-
 def initRA(L, Nt, Norbs):
     # theta for band case
     theta = init_block_theta(Nt, Norbs)
@@ -610,9 +598,8 @@ def initRA(L, Nt, Norbs):
     A = -np.transpose(theta) * (L.G - L.L)
 
     return R, A
-      
+    
 
-        
 def computeRelativeDifference(a, b):
     '''
     change = np.sum(abs(a.L - b.L))/np.sum(abs(a.L)) \
@@ -633,43 +620,9 @@ def computeRelativeDifference(a, b):
               np.sum(abs(a.M - b.M))/np.sum(abs(a.M))]
    
     return change;
-        
 
 
-def old_multiply(a, b, c, Nt, Ntau, dt, dtau, Norbs):
-
-    aR, aA = initRA(a, Nt, Norbs)
-    bR, bA = initRA(b, Nt, Norbs)
-
-    #will this change a and b?
-
-    aR  += np.diag(a.DR)
-    aA  += np.diag(a.DR)
-    a.M += np.diag(a.DM)
-
-    bR  += np.diag(b.DR)
-    bA  += np.diag(b.DR)
-    b.M += np.diag(b.DM)
-
-    #c = langreth(Nt, Ntau, Norbs)
-    c.zero(Nt, Ntau, Norbs)
-    
-    c.M = np.dot(a.M, b.M) * (-1j*dtau)
-
-    # what are these lines for??
-    cR = np.dot(aR, bR) * (dt)
-    cA = np.dot(aA, bA) * (dt)
-
-    mixed_product = np.dot(a.RI, b.IR) * (-1j*dtau)
-    
-    c.G = (np.dot(a.G, bA) + np.dot(aR, b.G)) * (dt) + mixed_product
-    c.L = (np.dot(a.L, bA) + np.dot(aR, b.L)) * (dt) + mixed_product
-    
-    c.RI = np.dot(aR, b.RI) * (dt) + np.dot(a.RI, b.M) * (-1j*dtau)
-    c.IR = np.dot(a.IR, bA) * (dt) + np.dot(a.M, b.IR) * (-1j*dtau)
-    
-    #return c
-
+# multiply two langreth matrices        
 def multiply(a, b, c, Nt, Ntau, dt, dtau, Norbs):
 
     aR, aA = initRA(a, Nt, Norbs)

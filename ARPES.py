@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Dec 08 01:44:04 2016
-
-@author: Ben
-"""
-
-#
-# Warnings!!!
-#
-# fix band / time indices for ARPES. THIS HAS CHANGED!!
-#
 
 import subprocess
 #bash_command('source mlpython2.7.5.sh')
