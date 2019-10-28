@@ -1,3 +1,6 @@
+
+[![DOI](https://zenodo.org/badge/218070066.svg)](https://zenodo.org/badge/latestdoi/218070066)
+
 # graphite
 
 Typical workflow on my server as follows:
